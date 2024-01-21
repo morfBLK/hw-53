@@ -5,20 +5,39 @@ import Task from "./Task/Task";
 
 function App() {
   const [task, setTask] = useState([
-    {inputUser: 'qwerty1', id: 'd1'},
-    {inputUser: 'qwerty2', id: 'd2'},
-    {inputUser: 'qwerty3', id: 'd3'},
-    {inputUser: 'qwerty4', id: 'd4'}
+    {inputUser: 'Buy milk', id: 'd1', style: 'none'},
+    {inputUser: 'Walk with dog', id: 'd2', style: 'none'},
+    {inputUser: 'Do homework', id: 'd3', style: 'none'}
   ]);
 
   const [currentTask, setCurrentTask] = useState([
-      {inputUser: 'Добавить новое', id: ''}
+      {inputUser: 'Add new task', style: 'none'}
     ]
   )
 
+  const onChangeCheckbox = (index:string) => {
+    const tasksCopy = [...task];
+    tasksCopy.map(task => {
+      if (task.id === index) {
+        if (task.style === 'none'){
+          task.style = 'block';
+        } else {
+          task.style = 'none';
+        }
+      }
+      return tasksCopy;
+    })
+    setTask(tasksCopy);
+  }
+
   const firstThreeTask = task.map((task) => {
     return (
-      <Task inputUser={task.inputUser} key={task.id} onClickDelete={() => deleteTask(task.id)}/>
+      <Task inputUser={task.inputUser}
+         key={task.id}
+          onClickDelete={() => deleteTask(task.id)}
+          onChangeCheckbox={() => onChangeCheckbox(task.id)}
+          style={task.style}
+    />
     )
   });
 
@@ -30,25 +49,24 @@ function App() {
       }
     }
     setTask(newTasks);
-    console.log(id)
   }
 
   const changeTask = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const randomId = String(Math.floor(Math.random() * (10000 - 5 + 1)) + 5);
-    const task = {...currentTask[0]};
-    task.inputUser = event.target.value;
-    task.id = randomId
     const currentTaskCopy = [...currentTask];
-    currentTaskCopy[0] = task;
+    currentTaskCopy[0].inputUser = event.target.value;
     setCurrentTask(currentTaskCopy);
-    console.log(currentTaskCopy);
   };
 
   const newTask = () => {
-    const copyTasks = [...task, currentTask[0]];
-    setTask(copyTasks);
+    if (currentTask[0].inputUser !== 'Add new task'){
+      const newTask = {
+        inputUser: currentTask[0].inputUser,
+        id: String(Math.floor(Math.random() * (10000 - 5 + 1)) + 5), style: 'none'
+      }
+      const tasksCopy = [...task, newTask];
+      setTask(tasksCopy);
+    }
   }
-
   return (
     <div className="App">
       <AddTaskForm onClick={newTask} currentTask={currentTask[0].inputUser}
@@ -58,4 +76,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
